@@ -1,9 +1,10 @@
-package com.oss.Followme
+package com.oss.followMe
 
 import android.app.Application
 import com.kakao.sdk.common.KakaoSdk
 
-class GlobalApplication :Application() {
+class GlobalApplication :Application()
+{
     override fun onCreate() {
         super.onCreate()
 

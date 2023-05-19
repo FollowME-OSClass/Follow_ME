@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "776783503426",
+    "firebase_url": "https://follow-me-386114-default-rtdb.firebaseio.com",
+    "project_id": "follow-me-386114",
+    "storage_bucket": "follow-me-386114.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:776783503426:android:c02c187a24b1338fd44ddb",
+        "android_client_info": {
+          "package_name": "com.oss.Followme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "776783503426-kelut78toe100ld751ipe5luc68huuqf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oss.Followme",
+            "certificate_hash": "8a816a8a3e94aa0223b33b0726b3344421cefad1"
+          }
+        },
+        {
+          "client_id": "776783503426-6kj38qdt39quh29esu3udust8j8igg6t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8K0vCEBlPLONCFpN1frCR4aABhxvVVB0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "776783503426-6kj38qdt39quh29esu3udust8j8igg6t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,8 @@
 <resources>
-    <string name="app_name">FollowMe</string>
-    <string name="kakaologin">KakaoLogin</string>
+    <string name="app_name"> FollowMe </string>
+    <string name="kakaologin"> KakaoLogin </string>
+    <string name="Googlelogin"> GoogleLogin </string>
+    <string name="webClientId"> 776783503426-kelut78toe100ld751ipe5luc68huuqf.apps.googleusercontent.com </string>
+    <string name="Kakao_Tag"> Kakao_Log </string>
+    <string name="Google_Tag"> Google_Log </string>
 </resources>
