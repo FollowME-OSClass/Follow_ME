@@ -13,7 +13,6 @@ dependencyResolutionManagement {
         maven { url 'https://devrepo.kakao.com/nexus/content/groups/public/' }
         maven { url 'https://maven.google.com' }
     }
-
 }
 rootProject.name = "followMe"
 include ':app'

@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:776783503426:android:c02c187a24b1338fd44ddb",
+        "mobilesdk_app_id": "1:776783503426:android:c9b558c33211e692d44ddb",
         "android_client_info": {
-          "package_name": "com.oss.Followme"
+          "package_name": "com.oss.followMe"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "776783503426-kelut78toe100ld751ipe5luc68huuqf.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.oss.Followme",
+            "package_name": "com.oss.followMe",
             "certificate_hash": "8a816a8a3e94aa0223b33b0726b3344421cefad1"
           }
         },

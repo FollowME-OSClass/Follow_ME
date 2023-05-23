@@ -1,4 +1,3 @@
-package com.oss.Followme
-
+package com.oss.followMe
 class Fragment {
 }

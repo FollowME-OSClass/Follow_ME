@@ -5,4 +5,6 @@
     <string name="webClientId"> 776783503426-kelut78toe100ld751ipe5luc68huuqf.apps.googleusercontent.com </string>
     <string name="Kakao_Tag"> Kakao_Log </string>
     <string name="Google_Tag"> Google_Log </string>
+    <string name="login_Name">따라와</string>
+    <string name="home_activity">Home Activity</string>
 </resources>

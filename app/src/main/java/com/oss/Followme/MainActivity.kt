@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -14,6 +13,8 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
@@ -26,13 +27,11 @@ import com.oss.followMe.databinding.ActivityMainBinding
 const val KTAG = "KakaoLog"
 const val GTAG = "GoogleLog"
 
-const val REQ_GOO_ID = 1001
-
 @Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity(), View.OnClickListener
 {
-    private var _binding: ActivityMainBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var _binding: ActivityMainBinding
+    private val binding get() = _binding
 
     private lateinit var auth: FirebaseAuth
     private lateinit var mGoogleSignInClient: GoogleSignInClient
@@ -70,13 +69,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener
 
     private fun homeActivityResult()
     {
-        val homeActivity = Intent(this, HomeActivity::class.java)
-        startActivity(homeActivity)
+        val moveHomeActivity = Intent(this, HomeActivity::class.java)
+        startActivity(moveHomeActivity)
     }
 
     private fun firebaseAuthWithGoogle(idToken: String)
     {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth = Firebase.auth
         auth.signInWithCredential(credential).addOnCompleteListener(this)
         {
             if(it.isSuccessful)
