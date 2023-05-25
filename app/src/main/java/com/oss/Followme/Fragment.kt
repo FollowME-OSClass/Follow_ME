@@ -1,3 +1,11 @@
 package com.oss.followMe
-class Fragment {
+
+import android.widget.TextView
+
+public class Fragment {
+    companion object {
+        fun createWeatherTextView() {
+
+        }
+    }
 }

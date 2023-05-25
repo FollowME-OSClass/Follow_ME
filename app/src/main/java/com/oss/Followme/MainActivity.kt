@@ -30,8 +30,8 @@ const val GTAG = "GoogleLog"
 @Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity(), View.OnClickListener
 {
-    private lateinit var _binding: ActivityMainBinding
-    private val binding get() = _binding
+    private lateinit var _mainBinding: ActivityMainBinding
+    private val mainBinding get() = _mainBinding
 
     private lateinit var auth: FirebaseAuth
     private lateinit var mGoogleSignInClient: GoogleSignInClient
@@ -54,8 +54,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        _binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        _mainBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(mainBinding.root)
 
         //setContentView(R.layout.activity_main)
 
@@ -63,8 +63,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener
         //        val keyHash = Utility.getKeyHash(this)
         //        Log.i("KeyHash", keyHash)
 
-        binding.KakaoLogin.setOnClickListener(this)
-        binding.GoogleLogin.setOnClickListener(this)
+        mainBinding.KakaoLogin.setOnClickListener(this)
+        mainBinding.GoogleLogin.setOnClickListener(this)
     }
 
     private fun homeActivityResult()
