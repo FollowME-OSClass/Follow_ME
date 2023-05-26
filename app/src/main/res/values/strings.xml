@@ -1,13 +1,15 @@
 <resources>
     <string name="app_name"> FollowMe </string>
-    <string name="kakaologin"> KakaoLogin </string>
-    <string name="Googlelogin"> GoogleLogin </string>
-    <string name="webClientId"> 776783503426-kelut78toe100ld751ipe5luc68huuqf.apps.googleusercontent.com </string>
+    <string name="kakaoLogin"> KakaoLogin </string>
+    <string name="GoogleLogin"> GoogleLogin </string>
+    <string name="webClientId"> 776783503426-eluted78toe100ld751ipe5luc68huuqf.apps.googleusercontent.com </string>
     <string name="Kakao_Tag"> Kakao_Log </string>
     <string name="Google_Tag"> Google_Log </string>
     <string name="login_Name">따라와</string>
     <string name="home_activity">Home Activity</string>
-    <string name="api_check">API Check</string>
+    <string name="apiCheck">API Check</string>
+    <string name="apiAirCheck">API Air Check</string>
 
     <string name="weather_apikey">http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=b3Bwbi39PobvWYcuGGwcD%2F9Kpo%2BODkKI9ud8dCf29X8pqNRfQ8sPfm3PUKJplSSsfcUxCQmUF3iIa1mIVuknCQ%3D%3D&amp;dataType=JSON&amp;numOfRows=60</string>
+    <string name="air_apikey">http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?serviceKey=b3Bwbi39PobvWYcuGGwcD%2F9Kpo%2BODkKI9ud8dCf29X8pqNRfQ8sPfm3PUKJplSSsfcUxCQmUF3iIa1mIVuknCQ%3D%3D&amp;returnType=json&amp;numOfRows=30</string>
 </resources>

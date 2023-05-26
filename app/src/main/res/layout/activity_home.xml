@@ -28,11 +28,24 @@
     />
 
     <Button
-        android:id="@+id/testAPI"
+        android:id="@+id/testWeatherAPI"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/api_check"
+        android:text="@string/apiCheck"
+        android:padding="5dp"
         android:layout_margin="48dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+    />
+
+    <Button
+        android:id="@+id/testAirAPI"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/apiAirCheck"
+        android:padding="5dp"
+        android:layout_margin="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

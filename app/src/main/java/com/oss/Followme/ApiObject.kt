@@ -22,6 +22,13 @@ public class ApiObject()
 
     object AirObject
     {
-
+        // 미세 먼지 농도
+        var pm10: String? = null
+        // 미세 먼지 등급
+        var pm10Grade: String? = null
+        // 초 미세 먼지 농도
+        var pm25: String? = null
+        // 초 미세 먼지 등급
+        var pm25Grade: String? = null
     }
 }

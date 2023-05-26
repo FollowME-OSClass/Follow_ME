@@ -25,6 +25,7 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
     private lateinit var _binding: ActivityHomeBinding
     private val binding get() = _binding
     private var weather = ApiObject.WeatherObject
+    private var air = ApiObject.AirObject
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -32,7 +33,8 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
         _binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.testAPI.setOnClickListener(this)
+        binding.testWeatherAPI.setOnClickListener(this)
+        binding.testAirAPI.setOnClickListener(this)
     }
 
     @Throws(IOException::class, JSONException::class)
@@ -52,7 +54,6 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
         urlBuilder.append("&" + URLEncoder.encode("base_date", "UTF-8") + "=" + URLEncoder.encode(baseDate, "UTF-8"))
         // 조회하고 싶은 시간 02:00 ~ 3시간 단위
         urlBuilder.append("&" + URLEncoder.encode("base_time", "UTF-8") + "=" + URLEncoder.encode(baseTime, "UTF-8"))
-
 
         // GET 방식으로 전송해서 파라미터 받아오기
         val url = URL(urlBuilder.toString())
@@ -130,11 +131,79 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
                 else if (fcstValue.toInt() in 158 .. 202) weather.vec += "남풍입니다."
                 else if (fcstValue.toInt() in 203 .. 247) weather.vec += "남서풍입니다."
                 else if (fcstValue.toInt() in 248 .. 292) weather.vec += "서풍입니다."
-                else if (fcstValue.toInt() in 293 .. 337) weather.vec += "북써풍입니다."
+                else if (fcstValue.toInt() in 293 .. 337) weather.vec += "북서풍입니다."
                 else if (fcstValue.toInt() in 338 .. 360) weather.vec += "북풍입니다."
             }
             if (category == "WSD") weather.wsd = "현재 풍속은 ${fcstValue}m/s입니다."
         }
+    }
+
+    private fun airAPI(stationName: String?)
+    {
+        val apiUrl = getString(R.string.air_apikey)
+
+        val urlBuilder = StringBuilder(apiUrl)
+
+        // 버전 명 (1.3 버전에 PM_10, PM_2.5 수치 포함)
+        urlBuilder.append("&" + URLEncoder.encode("ver", "UTF-8") + "=" + URLEncoder.encode("1.3", "UTF-8"))
+        // 데이터 기간
+        urlBuilder.append("&" + URLEncoder.encode("dataTerm", "UTF-8") + "=" + URLEncoder.encode("daily", "UTF-8"))
+        // 측정소 명
+        urlBuilder.append("&" + URLEncoder.encode("stationName", "UTF-8") + "=" + URLEncoder.encode(stationName, "UTF-8"))
+
+        // GET 방식으로 전송해서 파라미터 받아오기
+        val url = URL(urlBuilder.toString())
+
+        val conn: HttpURLConnection = url.openConnection() as HttpURLConnection
+        conn.requestMethod = "GET"
+        conn.setRequestProperty("Content-type", "application/json")
+
+        val rd: BufferedReader =
+            if (conn.responseCode in 200..300) BufferedReader(InputStreamReader(conn.inputStream))
+            else BufferedReader(InputStreamReader(conn.errorStream))
+
+        val line = rd.readLine()
+
+        rd.close()
+        conn.disconnect()
+
+        val result = line.toString()
+
+        // response 키를 가지고 데이터를 파싱
+        val response = JSONObject(result).getString("response")
+        // response 로 부터 body 찾기
+        val body = JSONObject(response).getString("body")
+        // body 로 부터 items 찾기
+        val items = JSONObject(body).getJSONArray("items")
+
+        // 미세 먼지 농도
+        air.pm10 = "미세 먼지 농도는 "
+        air.pm10 += items.getJSONObject(0).getString("pm10Value") + "\uFEFF㎍/㎥입니다."
+        // 미세 먼지 등급
+        air.pm10Grade = "미세 먼지 등급은 "
+        when(items.getJSONObject(0).getString("pm10Grade"))
+        {
+            "1" -> {air.pm10Grade += "좋음 "}
+            "2" -> {air.pm10Grade += "보통 "}
+            "3" -> {air.pm10Grade += "나쁨 "}
+            "4" -> {air.pm10Grade += "매우 나쁨 "}
+            "null" -> {air.pm10Grade += " 알 수 없음 "}
+        }
+        air.pm10Grade += "상태입니다."
+        // 초 미세 먼지 농도
+        air.pm25 = "초 미세 먼지 농도는 "
+        air.pm25 += items.getJSONObject(0).getString("pm25Value") + "\uFEFF㎍/㎥입니다."
+        // 초 미세 먼지 등급
+        air.pm25Grade = "초 미세 먼지 등급은 "
+        when(items.getJSONObject(0).getString("pm25Grade"))
+        {
+            "1" -> {air.pm25Grade += "좋음 "}
+            "2" -> {air.pm25Grade += "보통 "}
+            "3" -> {air.pm25Grade += "나쁨 "}
+            "4" -> {air.pm25Grade += "매우 나쁨 "}
+            "null" -> {air.pm25Grade += "알 수 없음 "}
+        }
+        air.pm25Grade += "상태입니다."
     }
 
     private fun timeChange(time: String): String
@@ -161,13 +230,20 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
         {
             when(v.id)
             {
-                R.id.testAPI ->
+                R.id.testWeatherAPI ->
                 {
-                    val weatherThread = Thread(NetworkThread())
+                    val weatherThread = Thread(NetworkThread("weather"))
                     weatherThread.start()
                     weatherThread.join()
 
                     createView("weatherText")
+                }
+                R.id.testAirAPI ->
+                {
+                    val airThread = Thread(NetworkThread("air"))
+                    airThread.start()
+                    airThread.join()
+
                     createView("airText")
                 }
             }
@@ -190,7 +266,7 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
                            weather.rn1 + "\n" +
                            weather.pty + "\n" +
                            weather.vec + "\n" +
-                           weather.wsd
+                           weather.wsd + "\n"
 
                 weatherTextView.text = text
                 weatherTextView.textSize = 11f
@@ -204,12 +280,30 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
             "airText" ->
             {
                 Log.i("airTextView", "create air TextView")
+
+                val param = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                val airTextView = TextView(applicationContext)
+                val text = air.pm10      + "\n" +
+                           air.pm10Grade + "\n" +
+                           air.pm25      + "\n" +
+                           air.pm25Grade + "\n"
+
+                airTextView.text = text
+                airTextView.textSize = 11f
+                airTextView.setTypeface(null, Typeface.BOLD)
+                airTextView.id = 0
+                airTextView.layoutParams = param
+                airTextView.setBackgroundColor(Color.argb(231, 62, 115, 188))
+                airTextView.setTextColor(Color.argb(255, 255, 255, 255))
+                binding.homeLinear.addView(airTextView)
             }
         }
     }
 
-    inner class NetworkThread : Thread()
+    inner class NetworkThread(task: String) : Thread()
     {
+        private val _task:String = task
+
         override fun run()
         {
             try
@@ -220,11 +314,14 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
                 val simpleDateFormatTime = SimpleDateFormat("HH00", Locale.KOREA).format(date)
                 Log.i("Date + Time: ",simpleDateFormatDay + simpleDateFormatTime)
 
-                weatherAPI(simpleDateFormatDay, simpleDateFormatTime, "53", "38")
+                when(_task)
+                {
+                    "weather" -> { weatherAPI(simpleDateFormatDay, simpleDateFormatTime, "53", "38") }
+                    "air" -> { airAPI("이도동") }
+                }
             }
             catch (e: IOException) { Log.i("THREE_ERROR1", e.message!!) }
             catch (e: JSONException) { Log.i("THREE_ERROR2", e.message!!) }
-            Log.i("현재 날씨 검출", "${weather.t1h}")
         }
     }
 }
