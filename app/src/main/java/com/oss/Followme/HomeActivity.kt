@@ -24,8 +24,7 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
 {
     private lateinit var _binding: ActivityHomeBinding
     private val binding get() = _binding
-    private var weather: String? = null
-    private var temperature: String? = null
+    private var weather = ApiObject.WeatherObject
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -37,7 +36,7 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
     }
 
     @Throws(IOException::class, JSONException::class)
-    private fun weatherAPI(baseDate: String, checkTime: String, nx: String, ny: String): String
+    private fun weatherAPI(baseDate: String, checkTime: String, nx: String, ny: String)
     {
         val baseTime: String = timeChange(checkTime) // 조회하고 싶은 시간
 
@@ -57,9 +56,6 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
 
         // GET 방식으로 전송해서 파라미터 받아오기
         val url = URL(urlBuilder.toString())
-        //어떻게 넘어가는지 확인하고 싶으면 아래 출력분 주석 해제
-
-        //println(url);
 
         val conn: HttpURLConnection = url.openConnection() as HttpURLConnection
         conn.requestMethod = "GET"
@@ -84,7 +80,7 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
         val body = JSONObject(response).getString("body")
         // body 로 부터 items 찾기
         val items = JSONObject(body).getString("items")
-        // items로 부터 itemlist 를 받기
+        // items 로 부터 itemList 를 받기
         val itemList = JSONObject(items).getJSONArray("item")
 
         for (i in 0 until itemList.length())
@@ -93,18 +89,52 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
             val category = itemList.getJSONObject(i).getString("category")
             if (category == "SKY")
             {
-                weather = "현재 날씨는 "
+                weather.sky = "현재 날씨는 "
                 when (fcstValue)
                 {
-                    "1" -> { weather += "맑은 상태로" }
-                    "2" -> { weather += "비가 오는 상태로 " }
-                    "3" -> { weather += "구름이 많은 상태로 " }
-                    "4" -> { weather += "흐린 상태로 " }
+                    "1" -> { weather.sky += "맑은 상태입니다." }
+                    "2" -> { weather.sky += "비가 오는 상태입니다." }
+                    "3" -> { weather.sky += "구름이 많은 상태입니다." }
+                    "4" -> { weather.sky += "흐린 상태입니다." }
                 }
             }
-            if (category == "T1H") { temperature = " 기온은 $fcstValue℃" }
+            if (category == "T1H") weather.t1h = "현재 기온은 $fcstValue℃입니다."
+            if (category == "RN1")
+            {
+                weather.rn1 = "현재 강수량은 "
+                if(fcstValue.toBoolean()) weather.rn1 += "${fcstValue}입니다."
+                else weather.rn1 += "없습니다."
+            }
+            if (category == "REH") weather.reh = "현재 습도는 $fcstValue%입니다."
+            if (category == "PTY")
+            {
+                weather.pty = "현재 강수 형태는 "
+                when(fcstValue)
+                {
+                    "0" -> { weather.pty += "없습니다."}
+                    "1" -> { weather.pty += "비가 내리고 있습니다."}
+                    "2" -> { weather.pty += "비나 눈이 내리고 있습니다."}
+                    "3" -> { weather.pty += "눈이 내리고 있습니다."}
+                    "5" -> { weather.pty += "빗방울이 내리고 있습니다."}
+                    "6" -> { weather.pty += "빗방울 및 눈 날림이 있습니다."}
+                    "7" -> { weather.pty += "눈 날림이 있습니다."}
+                }
+            }
+            if (category == "VEC")
+            {
+                weather.vec = "현재 풍향은 "
+                if (fcstValue.toInt() in 0 .. 22) weather.vec += "북풍입니다."
+                else if (fcstValue.toInt() in 23 .. 67) weather.vec += "북동풍입니다."
+                else if (fcstValue.toInt() in 68 .. 112) weather.vec += "동풍입니다."
+                else if (fcstValue.toInt() in 113 .. 157) weather.vec += "동남풍입니다."
+                else if (fcstValue.toInt() in 158 .. 202) weather.vec += "남풍입니다."
+                else if (fcstValue.toInt() in 203 .. 247) weather.vec += "남서풍입니다."
+                else if (fcstValue.toInt() in 248 .. 292) weather.vec += "서풍입니다."
+                else if (fcstValue.toInt() in 293 .. 337) weather.vec += "북써풍입니다."
+                else if (fcstValue.toInt() in 338 .. 360) weather.vec += "북풍입니다."
+            }
+            if (category == "WSD") weather.wsd = "현재 풍속은 ${fcstValue}m/s입니다."
         }
-        return weather + temperature
     }
 
     private fun timeChange(time: String): String
@@ -138,6 +168,7 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
                     weatherThread.join()
 
                     createView("weatherText")
+                    createView("airText")
                 }
             }
         }
@@ -149,10 +180,19 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
         {
             "weatherText" ->
             {
+                Log.i("weatherTextView", "create weather TextView")
+
                 val param = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
                 val weatherTextView = TextView(applicationContext)
+                val text = weather.sky + "\n" +
+                           weather.t1h + "\n" +
+                           weather.reh + "\n" +
+                           weather.rn1 + "\n" +
+                           weather.pty + "\n" +
+                           weather.vec + "\n" +
+                           weather.wsd
 
-                weatherTextView.text = weather
+                weatherTextView.text = text
                 weatherTextView.textSize = 11f
                 weatherTextView.setTypeface(null, Typeface.BOLD)
                 weatherTextView.id = 0
@@ -161,29 +201,30 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
                 weatherTextView.setTextColor(Color.argb(255, 255, 255, 255))
                 binding.homeLinear.addView(weatherTextView)
             }
+            "airText" ->
+            {
+                Log.i("airTextView", "create air TextView")
+            }
         }
     }
 
     inner class NetworkThread : Thread()
     {
-
         override fun run()
         {
             try
             {
-                // date와 time에 값을 넣어야함, 오늘 날짜 기준으로 넣기!
-                // ex) date = "20210722", time = "0500"
                 val date = Date(System.currentTimeMillis() - (System.currentTimeMillis() / 1000 / 60 / 60 * 3))
 
                 val simpleDateFormatDay = SimpleDateFormat("yyyyMMdd", Locale.KOREA).format(date)
                 val simpleDateFormatTime = SimpleDateFormat("HH00", Locale.KOREA).format(date)
                 Log.i("Date + Time: ",simpleDateFormatDay + simpleDateFormatTime)
 
-                weather = weatherAPI(simpleDateFormatDay, simpleDateFormatTime, "53", "38")
+                weatherAPI(simpleDateFormatDay, simpleDateFormatTime, "53", "38")
             }
             catch (e: IOException) { Log.i("THREE_ERROR1", e.message!!) }
             catch (e: JSONException) { Log.i("THREE_ERROR2", e.message!!) }
-            Log.i("현재 날씨", weather.toString())
+            Log.i("현재 날씨 검출", "${weather.t1h}")
         }
     }
 }
