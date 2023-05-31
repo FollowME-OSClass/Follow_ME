@@ -4,10 +4,12 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import com.google.firebase.database.*
 import com.oss.followMe.databinding.ActivityHomeBinding
 import org.json.JSONException
 import org.json.JSONObject
@@ -20,12 +22,15 @@ import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.*
 
-class HomeActivity : AppCompatActivity(), View.OnClickListener
+class HomeActivity : ComponentActivity(), View.OnClickListener
 {
     private lateinit var _binding: ActivityHomeBinding
     private val binding get() = _binding
     private var weather = ApiObject.WeatherObject
     private var air = ApiObject.AirObject
+    private var theme = ApiObject.Theme
+    private var contents = ApiObject.Contents
+    private var contextCheck = false
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -33,8 +38,7 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
         _binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.testWeatherAPI.setOnClickListener(this)
-        binding.testAirAPI.setOnClickListener(this)
+        binding.testThemeTravel.setOnClickListener(this)
     }
 
     @Throws(IOException::class, JSONException::class)
@@ -88,6 +92,7 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
         {
             val fcstValue = itemList.getJSONObject(i).getString("fcstValue")
             val category = itemList.getJSONObject(i).getString("category")
+
             if (category == "SKY")
             {
                 weather.sky = "현재 날씨는 "
@@ -103,36 +108,36 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
             if (category == "RN1")
             {
                 weather.rn1 = "현재 강수량은 "
-                if(fcstValue.toBoolean()) weather.rn1 += "${fcstValue}입니다."
-                else weather.rn1 += "없습니다."
+                if (fcstValue == "강수없음") weather.rn1 += "없습니다."
+                else weather.rn1 += "${fcstValue}입니다."
             }
             if (category == "REH") weather.reh = "현재 습도는 $fcstValue%입니다."
             if (category == "PTY")
             {
                 weather.pty = "현재 강수 형태는 "
-                when(fcstValue)
+                when (fcstValue)
                 {
-                    "0" -> { weather.pty += "없습니다."}
-                    "1" -> { weather.pty += "비가 내리고 있습니다."}
-                    "2" -> { weather.pty += "비나 눈이 내리고 있습니다."}
-                    "3" -> { weather.pty += "눈이 내리고 있습니다."}
-                    "5" -> { weather.pty += "빗방울이 내리고 있습니다."}
-                    "6" -> { weather.pty += "빗방울 및 눈 날림이 있습니다."}
-                    "7" -> { weather.pty += "눈 날림이 있습니다."}
+                    "0" -> { weather.pty += "없습니다." }
+                    "1" -> { weather.pty += "비가 내리고 있습니다." }
+                    "2" -> { weather.pty += "비나 눈이 내리고 있습니다." }
+                    "3" -> { weather.pty += "눈이 내리고 있습니다." }
+                    "5" -> { weather.pty += "빗방울이 내리고 있습니다." }
+                    "6" -> { weather.pty += "빗방울 및 눈 날림이 있습니다." }
+                    "7" -> { weather.pty += "눈 날림이 있습니다." }
                 }
             }
             if (category == "VEC")
             {
                 weather.vec = "현재 풍향은 "
-                if (fcstValue.toInt() in 0 .. 22) weather.vec += "북풍입니다."
-                else if (fcstValue.toInt() in 23 .. 67) weather.vec += "북동풍입니다."
-                else if (fcstValue.toInt() in 68 .. 112) weather.vec += "동풍입니다."
-                else if (fcstValue.toInt() in 113 .. 157) weather.vec += "동남풍입니다."
-                else if (fcstValue.toInt() in 158 .. 202) weather.vec += "남풍입니다."
-                else if (fcstValue.toInt() in 203 .. 247) weather.vec += "남서풍입니다."
-                else if (fcstValue.toInt() in 248 .. 292) weather.vec += "서풍입니다."
-                else if (fcstValue.toInt() in 293 .. 337) weather.vec += "북서풍입니다."
-                else if (fcstValue.toInt() in 338 .. 360) weather.vec += "북풍입니다."
+                if (fcstValue.toInt() in 0..22) weather.vec += "북풍입니다."
+                else if (fcstValue.toInt() in 23..67) weather.vec += "북동풍입니다."
+                else if (fcstValue.toInt() in 68..112) weather.vec += "동풍입니다."
+                else if (fcstValue.toInt() in 113..157) weather.vec += "동남풍입니다."
+                else if (fcstValue.toInt() in 158..202) weather.vec += "남풍입니다."
+                else if (fcstValue.toInt() in 203..247) weather.vec += "남서풍입니다."
+                else if (fcstValue.toInt() in 248..292) weather.vec += "서풍입니다."
+                else if (fcstValue.toInt() in 293..337) weather.vec += "북서풍입니다."
+                else if (fcstValue.toInt() in 338..360) weather.vec += "북풍입니다."
             }
             if (category == "WSD") weather.wsd = "현재 풍속은 ${fcstValue}m/s입니다."
         }
@@ -230,33 +235,58 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
         {
             when(v.id)
             {
-                R.id.testWeatherAPI ->
+                R.id.testThemeTravel ->
                 {
-                    val weatherThread = Thread(NetworkThread("weather"))
-                    weatherThread.start()
-                    weatherThread.join()
+                    // 주소
+                    val database = FirebaseDatabase.getInstance().reference.child("Travel").child("CNTS_000000000022466")
 
-                    createView("weatherText")
-                }
-                R.id.testAirAPI ->
-                {
-                    val airThread = Thread(NetworkThread("air"))
-                    airThread.start()
-                    airThread.join()
+                    database.addValueEventListener(object : ValueEventListener
+                    {
+                        override fun onDataChange(snapshot: DataSnapshot)
+                        {
 
-                    createView("airText")
+                            theme.intro = snapshot.child("Intro").value.toString()
+                            theme.themeName = snapshot.child("ThemeName").value.toString()
+                            theme.warning = snapshot.child("Warning").value.toString()
+
+                            createView("theme")
+
+                            for(data in snapshot.children)
+                            {
+                                if(data.value!!.javaClass.name != String::class.java.name)
+                                {
+                                    contents.address =  data.child("address").value.toString()
+                                    contents.imgSource?.img1 = data.child("img").child("img1").value.toString()
+                                    contents.imgSource?.img2 = data.child("img").child("img2").value.toString()
+                                    contents.name = data.child("name").value.toString()
+                                    contents.locate = data.child("locate").value.toString()
+                                    contents.nx = data.child("nx").value.toString()
+                                    contents.ny = data.child("ny").value.toString()
+
+                                    createView("contents")
+
+                                    val themeThread = Thread(NetworkThread(contents.nx, contents.ny, contents.locate))
+                                    themeThread.start()
+                                    themeThread.join()
+
+                                    createView("weather")
+                                    createView("air")
+                                }
+                            }
+                        }
+                        override fun onCancelled(error: DatabaseError) { Log.e("Firebase Error", "Firebase data read error ${error.toException()}") }
+                    })
                 }
             }
         }
     }
 
-    private fun createView(viewName: String)
-    {
-        when(viewName)
+    private fun createView(viewName: String){
+        when (viewName)
         {
-            "weatherText" ->
+            "weather" ->
             {
-                Log.i("weatherTextView", "create weather TextView")
+                Log.i("WeatherViewCreate", "날씨 뷰 생성")
 
                 val param = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
                 val weatherTextView = TextView(applicationContext)
@@ -268,6 +298,9 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
                            weather.vec + "\n" +
                            weather.wsd + "\n"
 
+                if (contextCheck) { weatherTextView.gravity = Gravity.START }
+                else { weatherTextView.gravity = Gravity.END }
+
                 weatherTextView.text = text
                 weatherTextView.textSize = 11f
                 weatherTextView.setTypeface(null, Typeface.BOLD)
@@ -277,9 +310,10 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
                 weatherTextView.setTextColor(Color.argb(255, 255, 255, 255))
                 binding.homeLinear.addView(weatherTextView)
             }
-            "airText" ->
+
+            "air" ->
             {
-                Log.i("airTextView", "create air TextView")
+                Log.i("airTextView", "미세 먼지 뷰 생성")
 
                 val param = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
                 val airTextView = TextView(applicationContext)
@@ -287,6 +321,9 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
                            air.pm10Grade + "\n" +
                            air.pm25      + "\n" +
                            air.pm25Grade + "\n"
+
+                if (contextCheck) { airTextView.gravity = Gravity.START }
+                else { airTextView.gravity = Gravity.END }
 
                 airTextView.text = text
                 airTextView.textSize = 11f
@@ -297,12 +334,64 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
                 airTextView.setTextColor(Color.argb(255, 255, 255, 255))
                 binding.homeLinear.addView(airTextView)
             }
+
+            "theme" ->
+            {
+                Log.i("themeTitleView", "테마 뷰 생성")
+
+                val param= LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                val intro = TextView(applicationContext)
+                val text = theme.intro      + "\n\n" +
+                           theme.themeName  + "\n\n" +
+                           theme.warning    + "\n"
+
+                intro.gravity = Gravity.CENTER
+
+                intro.text = text
+                intro.textSize = 11f
+                intro.setTypeface(null, Typeface.BOLD)
+                intro.id = 0
+                intro.layoutParams = param
+                intro.setBackgroundColor(Color.argb(231, 62, 115, 188))
+                intro.setTextColor(Color.argb(255, 255, 255, 255))
+                binding.homeLinear.addView(intro)
+            }
+
+            "contents" ->
+            {
+                val param = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                val contentsTextView = TextView(applicationContext)
+                val text = "이름: " + contents.name    + "\n" +
+                           "주소: " + contents.address + "\n"
+
+                if (contextCheck)
+                {
+                    contentsTextView.gravity = Gravity.END
+                    contextCheck = false
+                }
+                else
+                {
+                    contentsTextView.gravity = Gravity.START
+                    contextCheck = true
+                }
+
+                contentsTextView.text = text
+                contentsTextView.textSize = 11f
+                contentsTextView.setTypeface(null, Typeface.BOLD)
+                contentsTextView.id = 0
+                contentsTextView.layoutParams = param
+                contentsTextView.setBackgroundColor(Color.argb(231, 62, 115, 188))
+                contentsTextView.setTextColor(Color.argb(255, 255, 255, 255))
+                binding.homeLinear.addView(contentsTextView)
+            }
         }
     }
 
-    inner class NetworkThread(task: String) : Thread()
+    inner class NetworkThread(nx: String, ny: String, station: String) : Thread()
     {
-        private val _task:String = task
+        private val _nx = nx
+        private val _ny = ny
+        private val _station = station
 
         override fun run()
         {
@@ -314,11 +403,8 @@ class HomeActivity : AppCompatActivity(), View.OnClickListener
                 val simpleDateFormatTime = SimpleDateFormat("HH00", Locale.KOREA).format(date)
                 Log.i("Date + Time: ",simpleDateFormatDay + simpleDateFormatTime)
 
-                when(_task)
-                {
-                    "weather" -> { weatherAPI(simpleDateFormatDay, simpleDateFormatTime, "53", "38") }
-                    "air" -> { airAPI("이도동") }
-                }
+                weatherAPI(simpleDateFormatDay, simpleDateFormatTime, _nx, _ny)
+                airAPI(_station)
             }
             catch (e: IOException) { Log.i("THREE_ERROR1", e.message!!) }
             catch (e: JSONException) { Log.i("THREE_ERROR2", e.message!!) }

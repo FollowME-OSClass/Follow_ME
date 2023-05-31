@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -14,6 +15,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
@@ -28,13 +32,16 @@ const val KTAG = "KakaoLog"
 const val GTAG = "GoogleLog"
 
 @Suppress("DEPRECATION")
-class MainActivity : AppCompatActivity(), View.OnClickListener
+class MainActivity : ComponentActivity(), View.OnClickListener
 {
     private lateinit var _mainBinding: ActivityMainBinding
     private val mainBinding get() = _mainBinding
 
     private lateinit var auth: FirebaseAuth
     private lateinit var mGoogleSignInClient: GoogleSignInClient
+    private lateinit var firebaseDatabase: FirebaseDatabase
+    private lateinit var databaseReference: DatabaseReference
+
     private var startGoogleLoginForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
     {
         if(it.resultCode == RESULT_OK)
@@ -96,7 +103,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener
 
     private fun updateUI(user: FirebaseUser?)
     {
+        firebaseDatabase = FirebaseDatabase.getInstance()
+        databaseReference = Firebase.database.reference
 
+        if (user != null) { databaseReference.child("Users").child("GoogleLogin").child(user.uid).setValue(user.email) }
     }
 
     override fun onClick(v: View?) {
@@ -133,6 +143,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener
                             else if(token != null)
                             {
                                 Log.i(KTAG, "카카오톡 로그인 성공 ${token.accessToken}")
+                                Log.i(KTAG, "Instance: ${UserApiClient.instance}")
                                 homeActivityResult()
                             }
                         }

@@ -1,6 +1,6 @@
 package com.oss.followMe
 
-public class ApiObject()
+class ApiObject()
 {
     object WeatherObject
     {
@@ -19,7 +19,6 @@ public class ApiObject()
         // 풍속
         var wsd: String? = null
     }
-
     object AirObject
     {
         // 미세 먼지 농도
@@ -30,5 +29,28 @@ public class ApiObject()
         var pm25: String? = null
         // 초 미세 먼지 등급
         var pm25Grade: String? = null
+    }
+
+    object Contents
+    {
+        var address:    String = ""
+        var imgSource:  Img? = null
+        var locate:     String = ""
+        var name:       String = ""
+        var nx:         String = ""
+        var ny:         String = ""
+    }
+
+    object Img
+    {
+        var img1: String? = null
+        var img2: String? = null
+    }
+
+    object Theme
+    {
+        var intro:      String? = null
+        var themeName:  String? = null
+        var warning:    String? = null
     }
 }
