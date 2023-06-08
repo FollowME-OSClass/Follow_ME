@@ -12,8 +12,6 @@ class ApiObject()
         var sky: String? = null
         // 습도
         var reh: String? = null
-        // 강수 형태
-        var pty: String? = null
         // 풍향
         var vec: String? = null
         // 풍속
@@ -30,23 +28,16 @@ class ApiObject()
         // 초 미세 먼지 등급
         var pm25Grade: String? = null
     }
-
     object Contents
     {
+        var info:       String = ""
+        var intro:      String = ""
         var address:    String = ""
-        var imgSource:  Img? = null
         var locate:     String = ""
         var name:       String = ""
         var nx:         String = ""
         var ny:         String = ""
     }
-
-    object Img
-    {
-        var img1: String? = null
-        var img2: String? = null
-    }
-
     object Theme
     {
         var intro:      String? = null

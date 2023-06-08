@@ -1,16 +1,27 @@
 <resources>
     <string name="app_name"> FollowMe </string>
+
     <string name="kakaoLogin"> KakaoLogin </string>
     <string name="GoogleLogin"> GoogleLogin </string>
+
     <string name="webClientId"> 776783503426-eluted78toe100ld751ipe5luc68huuqf.apps.googleusercontent.com </string>
+
     <string name="Kakao_Tag"> Kakao_Log </string>
     <string name="Google_Tag"> Google_Log </string>
+
     <string name="login_Name">따라와</string>
     <string name="home_activity">메인 화면</string>
-    <string name="apiCheck">API Check</string>
-    <string name="apiAirCheck">API Air Check</string>
 
-    <string name="weather_apikey">http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=b3Bwbi39PobvWYcuGGwcD%2F9Kpo%2BODkKI9ud8dCf29X8pqNRfQ8sPfm3PUKJplSSsfcUxCQmUF3iIa1mIVuknCQ%3D%3D&amp;dataType=JSON&amp;numOfRows=60</string>
-    <string name="air_apikey">http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?serviceKey=b3Bwbi39PobvWYcuGGwcD%2F9Kpo%2BODkKI9ud8dCf29X8pqNRfQ8sPfm3PUKJplSSsfcUxCQmUF3iIa1mIVuknCQ%3D%3D&amp;returnType=json&amp;numOfRows=30</string>
     <string name="theme_check">Theme Check</string>
+
+    <string name="gameView">gameView</string>
+    <string name="leaf_button">leaf Button</string>
+
+    <string name="theme_info">테마 여행 정보 생성</string>
+    <string name="img1">img1</string>
+    <string name="img2">img2</string>
+    <string name="weatherImg">weatherImg</string>
+    <string name="airImg">airImg</string>
+    <string name="close_popup_page">closePopupPage</string>
+
 </resources>
