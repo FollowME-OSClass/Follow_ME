@@ -2,7 +2,10 @@ package com.oss.followMe
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.util.Log
+import com.bumptech.glide.Glide
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -31,6 +34,7 @@ class PopupActivity(context: Context, themeName: String?, themeCode: String?) : 
     private val code = themeCode
 
     private val dialog: Dialog = this
+    private val dialogParams = dialog.window?.attributes
 
     init
     {
@@ -46,6 +50,8 @@ class PopupActivity(context: Context, themeName: String?, themeCode: String?) : 
         {
             override fun onDataChange(snapshot: DataSnapshot)
             {
+                Glide.with(popupBinding.root).load(snapshot.child("img").value).into(popupBinding.themeImg)
+
                 contents.intro = snapshot.child("intro").value.toString()
                 contents.info = snapshot.child("info").value.toString()
                 contents.address = snapshot.child("address").value.toString()
@@ -62,6 +68,12 @@ class PopupActivity(context: Context, themeName: String?, themeCode: String?) : 
                 inputPopupView()
 
                 popupBinding.closePopup.setOnClickListener{ dialog.dismiss() }
+                dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+                dialogParams?.width = 990
+                dialogParams?.height = 1440
+
+                dialog.window?.attributes
 
                 dialog.show()
             }
@@ -76,8 +88,8 @@ class PopupActivity(context: Context, themeName: String?, themeCode: String?) : 
 
     private fun inputPopupView()
     {
-        val introText = " " + contents.intro
-        val addressText = "address: " + contents.address
+        val introText = " " + contents.intro + "\n"
+        val addressText = "주소: " + contents.address
 
         val vecWsd = "${weather.vec} (${weather.wsd})"
 
@@ -209,24 +221,26 @@ class PopupActivity(context: Context, themeName: String?, themeCode: String?) : 
         val body = JSONObject(response).getString("body")
         val items = JSONObject(body).getJSONArray("items")
 
-        air.pm10 = items.getJSONObject(0).getString("pm10Value") + "\uFEFF㎍/㎥"
+        air.pm10 = "미세 먼지: "
+        air.pm10 += items.getJSONObject(0).getString("pm10Value") + "\uFEFF㎍/㎥"
         when(items.getJSONObject(0).getString("pm10Grade"))
         {
-            "1" -> {air.pm10Grade = "좋음"}
-            "2" -> {air.pm10Grade = "보통"}
-            "3" -> {air.pm10Grade = "나쁨"}
-            "4" -> {air.pm10Grade = "매우 나쁨"}
-            "null" -> {air.pm10Grade = "알 수 없음"}
+            "1"     -> {air.pm10Grade = "좋음"}
+            "2"     -> {air.pm10Grade = "보통"}
+            "3"     -> {air.pm10Grade = "나쁨"}
+            "4"     -> {air.pm10Grade = "매우 나쁨"}
+            "null"  -> {air.pm10Grade = "알 수 없음"}
         }
 
-        air.pm25 = items.getJSONObject(0).getString("pm25Value") + "\uFEFF㎍/㎥"
+        air.pm25 = "초 미세 먼지: "
+        air.pm25 += items.getJSONObject(0).getString("pm25Value") + "\uFEFF㎍/㎥"
         when(items.getJSONObject(0).getString("pm25Grade"))
         {
-            "1" -> {air.pm25Grade = "좋음"}
-            "2" -> {air.pm25Grade = "보통"}
-            "3" -> {air.pm25Grade = "나쁨"}
-            "4" -> {air.pm25Grade = "매우 나쁨"}
-            "null" -> {air.pm25Grade = "알 수 없음"}
+            "1"     -> {air.pm25Grade = "좋음"}
+            "2"     -> {air.pm25Grade = "보통"}
+            "3"     -> {air.pm25Grade = "나쁨"}
+            "4"     -> {air.pm25Grade = "매우 나쁨"}
+            "null"  -> {air.pm25Grade = "알 수 없음"}
         }
     }
 

@@ -30,6 +30,9 @@ class ApiObject()
     }
     object Contents
     {
+        var firImg:     String = ""
+        var secImg:     String = ""
+
         var info:       String = ""
         var intro:      String = ""
         var address:    String = ""

@@ -20,6 +20,7 @@ class HomeActivity : ComponentActivity(), View.OnClickListener
     private var theme = ApiObject.Theme
     private var btnGravity = true
     private var id: Int = 1
+    private var isClicked = false
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -27,7 +28,7 @@ class HomeActivity : ComponentActivity(), View.OnClickListener
         _binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.testThemeTravel.setOnClickListener(this)
+        binding.themeTravel.setOnClickListener(this)
     }
     override fun onClick(v: View?)
     {
@@ -35,36 +36,39 @@ class HomeActivity : ComponentActivity(), View.OnClickListener
         {
             when(v.id)
             {
-                R.id.testThemeTravel ->
+                R.id.themeTravel ->
                 {
-                    // 주소
-                    val database = FirebaseDatabase.getInstance().reference.child("Travel").child("CNTS_000000000022466")
-
-                    database.addValueEventListener(object : ValueEventListener
+                    if(!isClicked)
                     {
-                        override fun onDataChange(snapshot: DataSnapshot)
+                        isClicked = true
+                        // 주소
+                        val database = FirebaseDatabase.getInstance().reference.child("Travel").child("CNTS_000000000022466")
+
+                        database.addValueEventListener(object : ValueEventListener
                         {
-                            theme.intro = snapshot.child("Intro").value.toString()
-                            theme.themeName = snapshot.child("ThemeName").value.toString()
-                            theme.warning = snapshot.child("Warning").value.toString()
-
-                            createView("theme", "null", "CNTS_000000000022466", 0)
-
-                            for(data in snapshot.children)
+                            override fun onDataChange(snapshot: DataSnapshot)
                             {
-                                if(data.value!!.javaClass.name != String::class.java.name)
+                                theme.intro = snapshot.child("Intro").value.toString()
+                                theme.themeName = snapshot.child("ThemeName").value.toString()
+                                theme.warning = snapshot.child("Warning").value.toString()
+
+                                createView("theme", "null", "CNTS_000000000022466", 0)
+
+                                for(data in snapshot.children)
                                 {
-                                    createView("leafBtn", data.key, "CNTS_000000000022466", id)
-                                    id++
+                                    if(data.value!!.javaClass.name != String::class.java.name)
+                                    {
+                                        createView("leafBtn", data.key, "CNTS_000000000022466", id)
+                                        id++
+                                    }
                                 }
                             }
-                        }
-                        override fun onCancelled(error: DatabaseError) { Log.e("Firebase Error", "Firebase data read error ${error.toException()}") }
-                    })
+                            override fun onCancelled(error: DatabaseError) { Log.e("Firebase Error", "Firebase data read error ${error.toException()}") }
+                        })
+                    }
                 }
             }
         }
-
     }
 
     private fun createView(viewName: String, themeName: String?, themeCode: String?, id: Int)
@@ -77,9 +81,10 @@ class HomeActivity : ComponentActivity(), View.OnClickListener
 
                 val param = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
                 val intro = TextView(applicationContext)
-                val text  = theme.intro      + "\n\n" +
-                            theme.themeName  + "\n\n" +
-                            theme.warning    + "\n"
+                var text  = theme.themeName  + "\n\n" +
+                            theme.intro      + "\n\n"
+
+                if(theme.warning != "Null") { text += theme.warning + "\n" }
 
                 intro.gravity = Gravity.CENTER
 

@@ -12,16 +12,20 @@
     <string name="login_Name">따라와</string>
     <string name="home_activity">메인 화면</string>
 
-    <string name="theme_check">Theme Check</string>
+    <string name="daily_theme">뽑아 보자</string>
+    <string name="myInfo_theme">모아 보자</string>
+    <string name="search_theme">찾아 보자</string>
 
     <string name="gameView">gameView</string>
     <string name="leaf_button">leaf Button</string>
 
     <string name="theme_info">테마 여행 정보 생성</string>
-    <string name="img1">img1</string>
-    <string name="img2">img2</string>
+    <string name="theme_img">themeImg</string>
     <string name="weatherImg">weatherImg</string>
     <string name="airImg">airImg</string>
     <string name="close_popup_page">closePopupPage</string>
+    <string name="divide_the_section">divide the section</string>
+    <string name="jeju_travel_info">제주 관광 정보</string>
+    <string name="app_icon">App Icon</string>
 
 </resources>
