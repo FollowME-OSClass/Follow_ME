@@ -10,7 +10,6 @@
     <string name="Google_Tag"> Google_Log </string>
 
     <string name="login_Name">따라와</string>
-    <string name="home_activity">메인 화면</string>
 
     <string name="daily_theme">뽑아 보자</string>
     <string name="myInfo_theme">모아 보자</string>
@@ -27,5 +26,11 @@
     <string name="divide_the_section">divide the section</string>
     <string name="jeju_travel_info">제주 관광 정보</string>
     <string name="app_icon">App Icon</string>
+    <string name="themePark">관광지</string>
+    <string name="restaurant">식당</string>
+    <string name="hotel">숙박</string>
+    <string name="search_hint">관광지를 검색해보세요!</string>
+    <string name="visit_jeju_items">visit Jeju Items</string>
+    <string name="contents_image">Contents Image</string>
 
 </resources>

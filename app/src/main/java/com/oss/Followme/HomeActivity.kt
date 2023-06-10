@@ -1,5 +1,6 @@
 package com.oss.followMe
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -20,7 +21,6 @@ class HomeActivity : ComponentActivity(), View.OnClickListener
     private var theme = ApiObject.Theme
     private var btnGravity = true
     private var id: Int = 1
-    private var isClicked = false
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -29,43 +29,57 @@ class HomeActivity : ComponentActivity(), View.OnClickListener
         setContentView(binding.root)
 
         binding.themeTravel.setOnClickListener(this)
+        binding.searchTravel.setOnClickListener(this)
+        binding.myInfoTravel.setOnClickListener(this)
     }
+
     override fun onClick(v: View?)
     {
         if(v != null)
         {
             when(v.id)
             {
+                R.id.searchTravel ->
+                {
+                    val moveSearchActivity = Intent(this, SearchActivity::class.java)
+                    startActivity(moveSearchActivity)
+                }
+
                 R.id.themeTravel ->
                 {
-                    if(!isClicked)
+                    binding.themeTravel.isClickable = false
+                    // 주소
+                    val database = FirebaseDatabase.getInstance().reference.child("Travel")
+
+                    database.addValueEventListener(object : ValueEventListener
                     {
-                        isClicked = true
-                        // 주소
-                        val database = FirebaseDatabase.getInstance().reference.child("Travel").child("CNTS_000000000022466")
-
-                        database.addValueEventListener(object : ValueEventListener
+                        override fun onDataChange(snapshot: DataSnapshot)
                         {
-                            override fun onDataChange(snapshot: DataSnapshot)
+                            val cId = snapshot.child("DailyTheme").value.toString()
+                            val snapShot = snapshot.child(cId)
+
+                            theme.intro = snapShot.child("Intro").value.toString()
+                            theme.themeName = snapShot.child("ThemeName").value.toString()
+                            theme.warning = snapShot.child("Warning").value.toString()
+
+                            createView("theme", "null", cId, 0)
+
+                            for(data in snapShot.children)
                             {
-                                theme.intro = snapshot.child("Intro").value.toString()
-                                theme.themeName = snapshot.child("ThemeName").value.toString()
-                                theme.warning = snapshot.child("Warning").value.toString()
-
-                                createView("theme", "null", "CNTS_000000000022466", 0)
-
-                                for(data in snapshot.children)
+                                if(data.value!!.javaClass.name != String::class.java.name)
                                 {
-                                    if(data.value!!.javaClass.name != String::class.java.name)
-                                    {
-                                        createView("leafBtn", data.key, "CNTS_000000000022466", id)
-                                        id++
-                                    }
+                                    createView("leafBtn", data.key, cId, id)
+                                    id++
                                 }
                             }
-                            override fun onCancelled(error: DatabaseError) { Log.e("Firebase Error", "Firebase data read error ${error.toException()}") }
-                        })
-                    }
+                        }
+                        override fun onCancelled(error: DatabaseError) { Log.e("Firebase Error", "Firebase data read error ${error.toException()}") }
+                    })
+                }
+
+                R.id.myInfoTravel ->
+                {
+
                 }
             }
         }
@@ -84,10 +98,14 @@ class HomeActivity : ComponentActivity(), View.OnClickListener
                 var text  = theme.themeName  + "\n\n" +
                             theme.intro      + "\n\n"
 
+                param.topMargin = 20
+                param.bottomMargin = 20
+
                 if(theme.warning != "Null") { text += theme.warning + "\n" }
 
                 intro.gravity = Gravity.CENTER
 
+                intro.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
                 intro.text = text
                 intro.textSize = 11f
                 intro.setTypeface(null, Typeface.BOLD)
@@ -101,6 +119,9 @@ class HomeActivity : ComponentActivity(), View.OnClickListener
             {
                 val param = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
                 val leafBtn  = Button(applicationContext)
+
+                param.topMargin = 50
+                param.bottomMargin = 50
 
                 if(btnGravity)
                 {
