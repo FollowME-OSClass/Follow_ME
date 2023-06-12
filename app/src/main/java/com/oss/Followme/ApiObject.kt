@@ -1,6 +1,6 @@
 package com.oss.followMe
 
-class ApiObject()
+class ApiObject
 {
     object WeatherObject
     {
@@ -30,9 +30,6 @@ class ApiObject()
     }
     object Contents
     {
-        var firImg:     String = ""
-        var secImg:     String = ""
-
         var info:       String = ""
         var intro:      String = ""
         var address:    String = ""
@@ -48,3 +45,12 @@ class ApiObject()
         var warning:    String? = null
     }
 }
+
+data class ThemeData(
+    var img: String,
+    var title: String,
+    var intro: String,
+    var address: String,
+    var tag: String,
+    var themeDataSize: Int = 5
+)

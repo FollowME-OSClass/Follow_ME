@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/search_items_round"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    tools:context=".SearchAdapter">
 
     <ImageView
         android:id="@+id/contentsImg"
-        android:layout_width="75dp"
+        android:layout_width="100dp"
         android:layout_height="match_parent"
-        android:layout_margin="5dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="10dp"
         android:contentDescription="@string/contents_image">
     </ImageView>
 
@@ -20,24 +23,28 @@
 
         <TextView
             android:id="@+id/contentsTitle"
+            android:textColor="@color/black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         </TextView>
 
         <TextView
             android:id="@+id/contentsIntro"
+            android:textColor="@color/black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         </TextView>
 
         <TextView
             android:id="@+id/contentsAddress"
+            android:textColor="@color/black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         </TextView>
 
         <TextView
             android:id="@+id/contentsTag"
+            android:textColor="@color/black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         </TextView>

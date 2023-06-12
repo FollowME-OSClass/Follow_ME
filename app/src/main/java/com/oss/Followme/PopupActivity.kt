@@ -137,6 +137,8 @@ class PopupActivity(context: Context, themeName: String?, themeCode: String?) : 
             if (weatherConnect.responseCode in 200..300) BufferedReader(InputStreamReader(weatherConnect.inputStream))
             else BufferedReader(InputStreamReader(weatherConnect.errorStream))
 
+        Log.d("brCheck", br.toString())
+
         val line = br.readLine()
 
         br.close()
@@ -282,8 +284,8 @@ class PopupActivity(context: Context, themeName: String?, themeCode: String?) : 
 
                 airData(_station)
             }
-            catch (e: IOException) { Log.e("IOThreadError", "Thread was not working!: ${e.localizedMessage}") }
-            catch (e: JSONException) { Log.e("JSONThreadError", "Thread was not working!: ${e.localizedMessage}") }
+            catch (e: IOException) { Log.e("IOThreadError", "EnviThread was not working!: ${e.localizedMessage}") }
+            catch (e: JSONException) { Log.e("JSONThreadError", "EnviThread was not working!: ${e.localizedMessage}") }
         }
     }
 }
