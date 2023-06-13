@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -15,13 +14,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.kakao.sdk.auth.TokenManagerProvider
 import com.kakao.sdk.auth.model.OAuthToken
-import com.kakao.sdk.common.model.ClientError
-import com.kakao.sdk.common.model.ClientErrorCause
+import com.kakao.sdk.common.model.KakaoSdkError
 import com.kakao.sdk.user.UserApiClient
 import com.oss.followMe.databinding.ActivityMainBinding
 
@@ -64,11 +62,14 @@ class MainActivity : ComponentActivity(), View.OnClickListener
         _mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding.root)
 
-        //setContentView(R.layout.activity_main)
-
         //        해시 키 확인 용도
         //        val keyHash = Utility.getKeyHash(this)
         //        Log.i("KeyHash", keyHash)
+
+        if (TokenManagerProvider.instance.manager.getToken() != null)
+        {
+            firebaseAuthWithKakao()
+        }
 
         mainBinding.KakaoLogin.setOnClickListener(this)
         mainBinding.GoogleLogin.setOnClickListener(this)
@@ -101,6 +102,39 @@ class MainActivity : ComponentActivity(), View.OnClickListener
         }
     }
 
+    private fun firebaseAuthWithKakao()
+    {
+        val callback: (OAuthToken?, Throwable?) -> Unit =
+            {
+                    token, error ->
+                if(error != null) Log.e(KTAG, "카카오 계정 로그인 실패", error)
+                else if(token != null)
+                {
+                    UserApiClient.instance.me { user, errorAccount ->
+                        val kakaoAccount = user?.kakaoAccount
+                        databaseReference = FirebaseDatabase.getInstance().reference
+
+                        try
+                        {
+                            val kakaoId = "kakao" + user?.id
+                            databaseReference.child("Users").child("KakaoLogin").child(kakaoId).setValue(kakaoAccount?.email)
+
+                            Log.i(KTAG, "카카오톡 로그인 성공 ${token.accessToken}")
+                            Log.i(KTAG, "Instance: ${UserApiClient.instance}")
+                            homeActivityResult()
+                        }
+                        catch (e: KakaoSdkError) {Log.e(KTAG, "${e.localizedMessage} / ${errorAccount?.localizedMessage}")}
+                    }
+                }
+            }
+
+        if (UserApiClient.instance.isKakaoTalkLoginAvailable(this))
+        {
+            UserApiClient.instance.loginWithKakaoTalk(this, 1001, null, null, null, callback)
+        }
+        else UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
+    }
+
     private fun updateUI(user: FirebaseUser?)
     {
         firebaseDatabase = FirebaseDatabase.getInstance()
@@ -118,37 +152,7 @@ class MainActivity : ComponentActivity(), View.OnClickListener
                 // 카카오 로그인 Activity
                 R.id.KakaoLogin ->
                 {
-                    val callback: (OAuthToken?, Throwable?) -> Unit =
-                        {
-                            token, error ->
-                            if(error != null) Log.e(KTAG, "카카오 계정 로그인 실패", error)
-                            else if(token != null)
-                            {
-                                Log.i(KTAG, "카카오 계정 로그인 성공")
-                                homeActivityResult()
-                            }
-                        }
-
-                    if (UserApiClient.instance.isKakaoTalkLoginAvailable(this))
-                    {
-                        UserApiClient.instance.loginWithKakaoTalk(this)
-                        {
-                            token, error ->
-                            if(error != null)
-                            {
-                                Log.e(KTAG, "카카오톡 로그인 실패", error)
-
-                                if(error is ClientError && error.reason == ClientErrorCause.Cancelled) return@loginWithKakaoTalk
-                            }
-                            else if(token != null)
-                            {
-                                Log.i(KTAG, "카카오톡 로그인 성공 ${token.accessToken}")
-                                Log.i(KTAG, "Instance: ${UserApiClient.instance}")
-                                homeActivityResult()
-                            }
-                        }
-                    }
-                    else UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
+                    firebaseAuthWithKakao()
                 }
 
                 // 구글 로그인 Activity One tap
