@@ -35,6 +35,8 @@ class MainActivity : ComponentActivity(), View.OnClickListener
     private lateinit var _mainBinding: ActivityMainBinding
     private val mainBinding get() = _mainBinding
 
+    var userInfo = ApiObject.UserInfo
+
     private lateinit var auth: FirebaseAuth
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     private lateinit var firebaseDatabase: FirebaseDatabase
@@ -112,15 +114,24 @@ class MainActivity : ComponentActivity(), View.OnClickListener
                 {
                     UserApiClient.instance.me { user, errorAccount ->
                         val kakaoAccount = user?.kakaoAccount
-                        databaseReference = FirebaseDatabase.getInstance().reference
+                        val kakaoId = "kakao" + user?.id
+                        databaseReference = FirebaseDatabase.getInstance().reference.child("Users").child("KakaoLogin").child(kakaoId)
 
                         try
                         {
-                            val kakaoId = "kakao" + user?.id
-                            databaseReference.child("Users").child("KakaoLogin").child(kakaoId).setValue(kakaoAccount?.email)
+                            databaseReference.child("Email").setValue(kakaoAccount?.email)
+                            databaseReference.child("Favorite").setValue("")
+                            databaseReference.child("Id").setValue(user?.id)
+                            databaseReference.child("Nickname").setValue(kakaoAccount?.profile?.nickname)
 
                             Log.i(KTAG, "카카오톡 로그인 성공 ${token.accessToken}")
                             Log.i(KTAG, "Instance: ${UserApiClient.instance}")
+
+                            userInfo.id = user?.id.toString()
+                            userInfo.email = kakaoAccount?.email.toString()
+                            userInfo.profileImg = kakaoAccount?.profile?.profileImageUrl.toString()
+                            userInfo.nickname = kakaoAccount?.profile?.nickname.toString()
+
                             homeActivityResult()
                         }
                         catch (e: KakaoSdkError) {Log.e(KTAG, "${e.localizedMessage} / ${errorAccount?.localizedMessage}")}
@@ -147,16 +158,16 @@ class MainActivity : ComponentActivity(), View.OnClickListener
 
         if(v != null)
         {
-            when(v.id)
+            when(v)
             {
                 // 카카오 로그인 Activity
-                R.id.KakaoLogin ->
+                mainBinding.KakaoLogin ->
                 {
                     firebaseAuthWithKakao()
                 }
 
                 // 구글 로그인 Activity One tap
-                R.id.GoogleLogin ->
+                mainBinding.GoogleLogin ->
                 {
                     Log.i(GTAG, "구글 로그인 버튼 확인")
                     val webClientId = "776783503426-6kj38qdt39quh29esu3udust8j8igg6t.apps.googleusercontent.com"

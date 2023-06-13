@@ -37,15 +37,15 @@ class HomeActivity : ComponentActivity(), View.OnClickListener
     {
         if(v != null)
         {
-            when(v.id)
+            when(v)
             {
-                R.id.searchTravel ->
+                binding.searchTravel ->
                 {
                     val moveSearchActivity = Intent(this, SearchActivity::class.java)
                     startActivity(moveSearchActivity)
                 }
 
-                R.id.themeTravel ->
+                binding.themeTravel ->
                 {
                     binding.themeTravel.isClickable = false
                     // 주소
@@ -77,9 +77,10 @@ class HomeActivity : ComponentActivity(), View.OnClickListener
                     })
                 }
 
-                R.id.myInfoTravel ->
+                binding.myInfoTravel ->
                 {
-
+                    val moveMyInfoActivity = Intent(this, MyInfoActivity::class.java)
+                    startActivity(moveMyInfoActivity)
                 }
             }
         }

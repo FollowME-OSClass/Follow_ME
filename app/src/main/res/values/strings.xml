@@ -31,5 +31,7 @@
     <string name="hotel">숙박</string>
     <string name="visit_jeju_items">visit Jeju Items</string>
     <string name="contents_image">Contents Image</string>
+    <string name="item_button">Item Button</string>
+    <string name="profile_img_view">Profile Img View</string>
 
 </resources>

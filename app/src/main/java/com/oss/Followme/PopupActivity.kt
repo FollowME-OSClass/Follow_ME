@@ -25,7 +25,7 @@ import java.util.*
 class PopupActivity(context: Context, themeName: String?, themeCode: String?) : Dialog(context)
 {
 
-    private var _popupBinding: ActivityPopupBinding = ActivityPopupBinding.inflate(layoutInflater)
+    private val _popupBinding: ActivityPopupBinding = ActivityPopupBinding.inflate(layoutInflater)
     private val popupBinding get() = _popupBinding
     private var contents = ApiObject.Contents
     private val weather = ApiObject.WeatherObject

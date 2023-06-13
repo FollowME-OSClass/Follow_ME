@@ -77,26 +77,25 @@ class SearchActivity : ComponentActivity(), View.OnClickListener
         })
     }
 
-
     override fun onClick(v: View?)
     {
         if(v != null)
         {
-            when(v.id)
+            when(v)
             {
-                R.id.themeTravel ->
+                searchBinding.themeTravel ->
                 {
                     val moveHomeActivity = Intent(this, HomeActivity::class.java)
                     startActivity(moveHomeActivity)
                 }
 
-                R.id.myInfoTravel ->
+                searchBinding.myInfoTravel ->
                 {
 
                 }
 
                 // 관광지 검색
-                R.id.searchThemeBtn ->
+                searchBinding.searchThemeBtn ->
                 {
                     val searchThread = SearchThread("c1")
 
@@ -106,7 +105,7 @@ class SearchActivity : ComponentActivity(), View.OnClickListener
                     searchBinding.searchThemeBtn.isClickable = false
                 }
                 // 식당 검색
-                R.id.searchRestaurantBtn ->
+                searchBinding.searchRestaurantBtn ->
                 {
                     val searchThread = SearchThread("c4")
 
@@ -116,7 +115,7 @@ class SearchActivity : ComponentActivity(), View.OnClickListener
                     searchBinding.searchRestaurantBtn.isClickable = false
                 }
 
-                R.id.searchHotelBtn ->
+                searchBinding.searchHotelBtn ->
                 {
                     val searchThread = SearchThread("c3")
 
@@ -175,6 +174,10 @@ class SearchActivity : ComponentActivity(), View.OnClickListener
                         "주소: " + items.getJSONObject(i).getString("address"),
                         // alltag
                         items.getJSONObject(i).getString("alltag"),
+                        // region
+                        items.getJSONObject(i).getJSONObject("region2cd").getString("label"),
+                        // phone
+                        items.getJSONObject(i).getString("phoneno")
                     )
                 )
             }
@@ -251,6 +254,10 @@ class SearchActivity : ComponentActivity(), View.OnClickListener
                     items.getJSONObject(i).getString("address"),
                     // alltag
                     items.getJSONObject(i).getString("alltag"),
+                    // region
+                    items.getJSONObject(i).getJSONObject("region2cd").getString("label"),
+                    // phone
+                    items.getJSONObject(i).getString("phoneno")
                 )
             )
         }

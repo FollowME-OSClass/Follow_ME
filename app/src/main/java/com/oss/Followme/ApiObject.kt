@@ -44,13 +44,23 @@ class ApiObject
         var themeName:  String? = null
         var warning:    String? = null
     }
+
+    object UserInfo
+    {
+        var email       : String = ""
+        var id          : String = ""
+        var profileImg  : String = ""
+        var nickname    : String = ""
+    }
 }
 
 data class ThemeData(
-    var img: String,
-    var title: String,
-    var intro: String,
-    var address: String,
-    var tag: String,
+    var img:            String,
+    var title:          String,
+    var intro:          String,
+    var address:        String,
+    var tag:            String,
+    var region:         String,
+    var phoneNumber:    String,
     var themeDataSize: Int = 5
 )

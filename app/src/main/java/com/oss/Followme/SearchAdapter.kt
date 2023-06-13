@@ -13,7 +13,7 @@ class SearchAdapter: RecyclerView.Adapter<SearchAdapter.ViewHolder>()
     private val itemBinding get() = _itemBinding
 
     var data = mutableListOf<ThemeData>()
-
+    private lateinit var adapterParent: ViewGroup
     init
     {
         setHasStableIds(true)
@@ -21,6 +21,7 @@ class SearchAdapter: RecyclerView.Adapter<SearchAdapter.ViewHolder>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
     {
+        adapterParent = parent
         _itemBinding = SearchItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(itemBinding.root)
     }
@@ -49,11 +50,27 @@ class SearchAdapter: RecyclerView.Adapter<SearchAdapter.ViewHolder>()
     {
         fun dataBinding(data: ThemeData)
         {
-            itemBinding.contentsTitle.text = data.title
-            itemBinding.contentsIntro.text = data.intro
-            itemBinding.contentsAddress.text = data.address
-            itemBinding.contentsTag.text = data.tag
+            var titleText:      String = "관광지: " + data.title
+            var introText:      String = "소개: " + data.intro
+            var addressText:    String = "주소: " + data.address
+            var tagText:        String = "태그: " + data.tag
+
+            if (data.title.length > 18) { titleText = "관광지: " + data.title.substring(0 until 18) + "..."}
+            if (data.intro.length > 18) { introText = "소개: " + data.intro.substring(0 until 18) + "..."}
+            if (data.address.length > 18) { addressText = "주소: " + data.address.substring(0 until 18) + "..."}
+            if (data.tag.length > 18) { tagText = "태그: " + data.tag.substring(0 until 18) + "..."}
+
+            itemBinding.contentsTitle.text = titleText
+            itemBinding.contentsIntro.text = introText
+            itemBinding.contentsAddress.text = addressText
+            itemBinding.contentsTag.text = tagText
             Glide.with(itemBinding.root).load(data.img).into(itemBinding.contentsImg)
+
+            itemBinding.searchItemBtn.setOnClickListener{
+                val showSearchPopup = SearchPopupActivity(adapterParent.context, data)
+                showSearchPopup.popupDialog()
+            }
         }
+
     }
 }
