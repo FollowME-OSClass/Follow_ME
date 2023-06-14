@@ -33,9 +33,24 @@ class SearchPopupActivity(context: Context, _data: ThemeData) : Dialog(context)
     private val air = ApiObject.AirObject
     private val enviData = ApiObject.Contents
 
+    private var starCheck = false
+
     init
     {
         setContentView(searchPopupBinding.root)
+
+        searchPopupBinding.starIcon.setOnClickListener {
+            starCheck = if(!starCheck)
+            {
+                searchPopupBinding.starIcon.setImageResource(R.drawable.able_star)
+                true
+            }
+            else
+            {
+                searchPopupBinding.starIcon.setImageResource(R.drawable.disable_star)
+                false
+            }
+        }
     }
 
     fun popupDialog() {
@@ -55,9 +70,13 @@ class SearchPopupActivity(context: Context, _data: ThemeData) : Dialog(context)
         dialogParams?.height = 1440
 
         dialog.window?.attributes
+        dialog.setCancelable(false)
 
         dialog.show()
     }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() { dialog.dismiss() }
 
     @SuppressLint("SetTextI18n")
     private fun dataInit()

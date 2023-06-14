@@ -22,13 +22,16 @@
             android:layout_marginHorizontal="10dp"
             android:gravity="center">
 
-            <ImageView
-                android:id="@+id/appIcon"
+            <ImageButton
+                android:id="@+id/starIcon"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_gravity="start"
+                android:src="@drawable/disable_star"
+                android:background="@color/white"
+                android:scaleType="fitCenter"
                 android:contentDescription="@string/app_icon">
-            </ImageView>
+            </ImageButton>
 
             <TextView
                 android:layout_width="0dp"

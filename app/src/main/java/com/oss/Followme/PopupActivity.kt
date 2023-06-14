@@ -74,7 +74,7 @@ class PopupActivity(context: Context, themeName: String?, themeCode: String?) : 
                 dialogParams?.height = 1440
 
                 dialog.window?.attributes
-
+                setCancelable(false)
                 dialog.show()
             }
 
@@ -85,6 +85,8 @@ class PopupActivity(context: Context, themeName: String?, themeCode: String?) : 
         })
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() { dialog.dismiss() }
 
     private fun inputPopupView()
     {
