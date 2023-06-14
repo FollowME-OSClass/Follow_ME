@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.oss.followMe.databinding.ActivitySearchBinding
@@ -26,6 +27,9 @@ class SearchActivity : ComponentActivity(), View.OnClickListener
     private var themeDataSet = mutableListOf<ThemeData>()
     private val pageNum = 1
 
+    private var pressTime: Long = 0
+    private val finishedTime: Long = 1000
+
     private val searchAdapter = SearchAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -44,7 +48,6 @@ class SearchActivity : ComponentActivity(), View.OnClickListener
         searchBinding.searchThemeBtn.setOnClickListener(this)
         searchBinding.searchRestaurantBtn.setOnClickListener(this)
         searchBinding.searchHotelBtn.setOnClickListener(this)
-
     }
 
     private fun searchInit()
@@ -128,6 +131,24 @@ class SearchActivity : ComponentActivity(), View.OnClickListener
         }
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed()
+    {
+        val checkTime = System.currentTimeMillis()
+        val intervalTime = checkTime - pressTime
+
+        if(intervalTime in 0..finishedTime)
+        {
+            moveTaskToBack(true)
+            finish()
+            android.os.Process.killProcess(android.os.Process.myPid())
+        }
+        else
+        {
+            pressTime = checkTime
+            Toast.makeText(applicationContext, "한번 더 누르면 앱이 종료됩니다", Toast.LENGTH_SHORT).show()
+        }
+    }
     private fun searchBarText(text: String?)
     {
         val themeUrl = "https://api.visitjeju.net/vsjApi/contents/searchList?apiKey=nueb4lmqst5qc9de&locale=kr"
@@ -164,6 +185,8 @@ class SearchActivity : ComponentActivity(), View.OnClickListener
             {
                 themeDataSet.add(
                     ThemeData(
+                        // cId
+                        items.getJSONObject(i).getString("contentsid"),
                         // img
                         items.getJSONObject(i).getJSONObject("repPhoto").getJSONObject("photoid").getString("imgpath"),
                         // title
@@ -244,6 +267,8 @@ class SearchActivity : ComponentActivity(), View.OnClickListener
         {
             themeDataSet.add(
                 ThemeData(
+                    // cId
+                    items.getJSONObject(i).getString("contentsid"),
                     // img
                     items.getJSONObject(i).getJSONObject("repPhoto").getJSONObject("photoid").getString("imgpath"),
                     // title
@@ -261,6 +286,8 @@ class SearchActivity : ComponentActivity(), View.OnClickListener
                 )
             )
         }
+
+        Log.d("check", "This Point2")
     }
 
     inner class SearchThread(category: String): Thread()

@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import com.google.firebase.database.*
 import com.oss.followMe.databinding.ActivityHomeBinding
@@ -21,6 +22,9 @@ class HomeActivity : ComponentActivity(), View.OnClickListener
     private var theme = ApiObject.Theme
     private var btnGravity = true
     private var id: Int = 1
+
+    private var pressTime: Long = 0
+    private val finishedTime: Long = 1000
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -83,6 +87,25 @@ class HomeActivity : ComponentActivity(), View.OnClickListener
                     startActivity(moveMyInfoActivity)
                 }
             }
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed()
+    {
+        val checkTime = System.currentTimeMillis()
+        val intervalTime = checkTime - pressTime
+
+        if(intervalTime in 0..finishedTime)
+        {
+            moveTaskToBack(true)
+            finish()
+            android.os.Process.killProcess(android.os.Process.myPid())
+        }
+        else
+        {
+            pressTime = checkTime
+            Toast.makeText(applicationContext, "한번 더 누르면 앱이 종료됩니다", Toast.LENGTH_SHORT).show()
         }
     }
 
