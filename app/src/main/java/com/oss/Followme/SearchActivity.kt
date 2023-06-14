@@ -185,6 +185,8 @@ class SearchActivity : ComponentActivity(), View.OnClickListener
             {
                 themeDataSet.add(
                     ThemeData(
+                        // cId
+                        items.getJSONObject(i).getString("contentsid"),
                         // img
                         items.getJSONObject(i).getJSONObject("repPhoto").getJSONObject("photoid").getString("imgpath"),
                         // title
@@ -265,6 +267,8 @@ class SearchActivity : ComponentActivity(), View.OnClickListener
         {
             themeDataSet.add(
                 ThemeData(
+                    // cId
+                    items.getJSONObject(i).getString("contentsid"),
                     // img
                     items.getJSONObject(i).getJSONObject("repPhoto").getJSONObject("photoid").getString("imgpath"),
                     // title
@@ -282,6 +286,8 @@ class SearchActivity : ComponentActivity(), View.OnClickListener
                 )
             )
         }
+
+        Log.d("check", "This Point2")
     }
 
     inner class SearchThread(category: String): Thread()

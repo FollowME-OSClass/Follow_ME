@@ -6,7 +6,12 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.util.Log
+import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.oss.followMe.databinding.ActivitySearchPopupBinding
 import org.json.JSONException
 import org.json.JSONObject
@@ -33,21 +38,33 @@ class SearchPopupActivity(context: Context, _data: ThemeData) : Dialog(context)
     private val air = ApiObject.AirObject
     private val enviData = ApiObject.Contents
 
-    private var starCheck = false
+    private var starCheck: Boolean = false
 
     init
     {
         setContentView(searchPopupBinding.root)
 
+        starCheck()
+
         searchPopupBinding.starIcon.setOnClickListener {
+
+            val userInfo = ApiObject.UserInfo
+            val database = FirebaseDatabase.getInstance().reference.child("Users").child("KakaoLogin").child("kakao"+userInfo.id).child("Favorite")
+
             starCheck = if(!starCheck)
             {
                 searchPopupBinding.starIcon.setImageResource(R.drawable.able_star)
+                database.child(data.cId).setValue(data.title)
+
+                Toast.makeText(context, "관광지를 모았어요!", Toast.LENGTH_SHORT).show()
                 true
             }
             else
             {
                 searchPopupBinding.starIcon.setImageResource(R.drawable.disable_star)
+                database.child(data.cId).setValue(null)
+
+                Toast.makeText(context, "관광지를 내보냈어요!", Toast.LENGTH_SHORT).show()
                 false
             }
         }
@@ -63,7 +80,7 @@ class SearchPopupActivity(context: Context, _data: ThemeData) : Dialog(context)
 
         inputWeatherView()
 
-        searchPopupBinding.closePopup.setOnClickListener{ dialog.dismiss() }
+        searchPopupBinding.closePopup.setOnClickListener{ closePopup() }
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         dialogParams?.width = 990
@@ -76,7 +93,9 @@ class SearchPopupActivity(context: Context, _data: ThemeData) : Dialog(context)
     }
 
     @Deprecated("Deprecated in Java")
-    override fun onBackPressed() { dialog.dismiss() }
+    override fun onBackPressed() { closePopup() }
+
+    private fun closePopup() { dialog.dismiss() }
 
     @SuppressLint("SetTextI18n")
     private fun dataInit()
@@ -204,6 +223,28 @@ class SearchPopupActivity(context: Context, _data: ThemeData) : Dialog(context)
                 enviData.ny = "38"
             }
         }
+    }
+
+    private fun starCheck()
+    {
+        val userInfo = ApiObject.UserInfo
+        val database = FirebaseDatabase.getInstance().reference.child("Users").child("KakaoLogin").child("kakao"+userInfo.id).child("Favorite")
+        database.addValueEventListener(object : ValueEventListener
+        {
+            override fun onDataChange(snapshot: DataSnapshot)
+            {
+                for(task in snapshot.children)
+                {
+                    if(task.value == data.title)
+                    {
+                        searchPopupBinding.starIcon.setImageResource(R.drawable.able_star)
+                        starCheck = true
+                        return
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) { Log.e("Firebase Error", "Firebase data read error ${error.toException()}") }
+        })
     }
 
     private fun inputWeatherView()

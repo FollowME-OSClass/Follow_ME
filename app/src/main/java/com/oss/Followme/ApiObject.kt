@@ -55,6 +55,7 @@ class ApiObject
 }
 
 data class ThemeData(
+    var cId:            String,
     var img:            String,
     var title:          String,
     var intro:          String,
