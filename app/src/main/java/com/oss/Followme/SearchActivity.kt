@@ -94,7 +94,8 @@ class SearchActivity : ComponentActivity(), View.OnClickListener
 
                 searchBinding.myInfoTravel ->
                 {
-
+                    val moveMyInfoActivity = Intent(this, MyInfoActivity::class.java)
+                    startActivity(moveMyInfoActivity)
                 }
 
                 // 관광지 검색
@@ -286,8 +287,6 @@ class SearchActivity : ComponentActivity(), View.OnClickListener
                 )
             )
         }
-
-        Log.d("check", "This Point2")
     }
 
     inner class SearchThread(category: String): Thread()

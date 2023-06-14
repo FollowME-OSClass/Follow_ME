@@ -120,7 +120,6 @@ class MainActivity : ComponentActivity(), View.OnClickListener
                         try
                         {
                             databaseReference.child("Email").setValue(kakaoAccount?.email)
-                            databaseReference.child("Favorite").setValue("")
                             databaseReference.child("Id").setValue(user?.id)
                             databaseReference.child("Nickname").setValue(kakaoAccount?.profile?.nickname)
 
