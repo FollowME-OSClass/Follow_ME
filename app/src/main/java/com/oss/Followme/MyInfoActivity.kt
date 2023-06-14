@@ -46,7 +46,7 @@ class MyInfoActivity : ComponentActivity(), View.OnClickListener
 
         myInfoBinding.searchTravel.setOnClickListener(this)
         myInfoBinding.themeTravel.setOnClickListener(this)
-        myInfoBinding.myInfoTravel.isClickable = false
+        myInfoBinding.myInfoTravel.setOnClickListener(this)
 
         infoInit()
 
@@ -67,6 +67,12 @@ class MyInfoActivity : ComponentActivity(), View.OnClickListener
             {
                 val moveHomeActivity = Intent(this, HomeActivity::class.java)
                 startActivity(moveHomeActivity)
+            }
+
+            myInfoBinding.myInfoTravel ->
+            {
+                val moveMyInfoActivity = Intent(this, MyInfoActivity::class.java)
+                startActivity(moveMyInfoActivity)
             }
         }
     }
@@ -106,7 +112,7 @@ class MyInfoActivity : ComponentActivity(), View.OnClickListener
         val userInfo = ApiObject.UserInfo
         val database = FirebaseDatabase.getInstance().reference.child("Users").child("KakaoLogin").child("kakao"+userInfo.id).child("Favorite")
 
-        database.addValueEventListener(object : ValueEventListener
+        database.addListenerForSingleValueEvent(object : ValueEventListener
         {
             @SuppressLint("NotifyDataSetChanged")
             override fun onDataChange(snapshot: DataSnapshot)

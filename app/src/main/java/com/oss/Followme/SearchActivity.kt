@@ -119,6 +119,7 @@ class SearchActivity : ComponentActivity(), View.OnClickListener
                     searchBinding.searchRestaurantBtn.isClickable = false
                 }
 
+                // 숙소 검색
                 searchBinding.searchHotelBtn ->
                 {
                     val searchThread = SearchThread("c3")
