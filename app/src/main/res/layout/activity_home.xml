@@ -26,6 +26,7 @@
         </TextView>
 
         <ScrollView
+            android:id="@+id/homeScroll"
             android:contentDescription="@string/gameView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -41,6 +42,18 @@
                 android:layout_marginStart="40dp"
                 android:layout_marginEnd="40dp"
                 android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/scrollText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:textSize="21sp"
+                    android:textColor="@color/black"
+                    android:textStyle="italic"
+                    android:text="@string/choose_theme">
+                </TextView>
 
             </LinearLayout>
         </ScrollView>
@@ -61,14 +74,14 @@
             android:id="@+id/searchTravel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
             android:layout_weight="1"
+            android:padding="5dp"
             android:text="@string/search_theme"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:padding="5dp"
-            android:layout_marginVertical="5dp"
             app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="VisualLintButtonSize">
+            tools:ignore="VisualLintButtonSize,DuplicateSpeakableTextCheck">
         </Button>
 
         <View

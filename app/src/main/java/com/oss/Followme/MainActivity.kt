@@ -22,6 +22,8 @@ import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.KakaoSdkError
 import com.kakao.sdk.user.UserApiClient
 import com.oss.followMe.databinding.ActivityMainBinding
+import java.text.SimpleDateFormat
+import java.util.*
 
 // 해쉬 키 확인에 사용하는 LIB
 // import com.kakao.sdk.common.util.Utility
@@ -35,7 +37,7 @@ class MainActivity : ComponentActivity(), View.OnClickListener
     private lateinit var _mainBinding: ActivityMainBinding
     private val mainBinding get() = _mainBinding
 
-    var userInfo = ApiObject.UserInfo
+    private var userInfo = ApiObject.UserInfo
 
     private lateinit var auth: FirebaseAuth
     private lateinit var mGoogleSignInClient: GoogleSignInClient
@@ -58,7 +60,8 @@ class MainActivity : ComponentActivity(), View.OnClickListener
         else { Log.e(GTAG, "호출 ID 오류") }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
 
         _mainBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -153,7 +156,8 @@ class MainActivity : ComponentActivity(), View.OnClickListener
         if (user != null) { databaseReference.child("Users").child("GoogleLogin").child(user.uid).setValue(user.email) }
     }
 
-    override fun onClick(v: View?) {
+    override fun onClick(v: View?)
+    {
 
         if(v != null)
         {

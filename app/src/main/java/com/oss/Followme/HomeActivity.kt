@@ -14,6 +14,8 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import com.google.firebase.database.*
 import com.oss.followMe.databinding.ActivityHomeBinding
+import java.text.SimpleDateFormat
+import java.util.*
 
 class HomeActivity : ComponentActivity(), View.OnClickListener
 {
@@ -54,12 +56,26 @@ class HomeActivity : ComponentActivity(), View.OnClickListener
                     binding.themeTravel.isClickable = false
                     // 주소
                     val database = FirebaseDatabase.getInstance().reference.child("Travel")
-
-                    database.addValueEventListener(object : ValueEventListener
+                    database.addListenerForSingleValueEvent(object : ValueEventListener
                     {
                         override fun onDataChange(snapshot: DataSnapshot)
                         {
-                            val cId = snapshot.child("DailyTheme").value.toString()
+                            val date = Date(System.currentTimeMillis() - (System.currentTimeMillis() / 1000 / 60 / 60 * 3))
+                            val dateFormatDay = SimpleDateFormat("yyyyMMdd", Locale.KOREA).format(date)
+                            val dbTime = snapshot.child("DailyTime").value.toString()
+                            val dataSize = snapshot.childrenCount - 2
+                            var cId = ""
+
+                            if(dbTime.toInt() < dateFormatDay.toInt()) { database.child("DailyTime").setValue(dateFormatDay) }
+
+                            val dataNum = snapshot.child("DailyTime").value.toString()
+
+                            for(data in snapshot.children)
+                            {
+                                if(dataNum.toInt() % dataSize == data.child("Number").value) { database.child("DailyTheme").setValue(data.key) }
+                            }
+
+                            cId = snapshot.child("DailyTheme").value.toString()
                             val snapShot = snapshot.child(cId)
 
                             theme.intro = snapShot.child("Intro").value.toString()
@@ -70,7 +86,7 @@ class HomeActivity : ComponentActivity(), View.OnClickListener
 
                             for(data in snapShot.children)
                             {
-                                if(data.value!!.javaClass.name != String::class.java.name)
+                                if(data.value!!.javaClass.name != String::class.java.name && data.key != "Number")
                                 {
                                     createView("leafBtn", data.key, cId, id)
                                     id++

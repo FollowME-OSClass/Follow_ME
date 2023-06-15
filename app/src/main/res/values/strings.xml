@@ -33,5 +33,6 @@
     <string name="contents_image">Contents Image</string>
     <string name="item_button">Item Button</string>
     <string name="profile_img_view">Profile Img View</string>
+    <string name="choose_theme">오늘의 테마 여행을 뽑아 보세요</string>
 
 </resources>

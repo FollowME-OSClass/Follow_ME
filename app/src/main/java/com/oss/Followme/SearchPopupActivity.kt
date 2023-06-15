@@ -3,7 +3,6 @@ package com.oss.followMe
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.util.Log
@@ -14,7 +13,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.oss.followMe.databinding.ActivitySearchPopupBinding
-import com.oss.followMe.MyInfoActivity
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.BufferedReader
